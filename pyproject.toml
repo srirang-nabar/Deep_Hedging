@@ -1,0 +1,50 @@
+[project]
+name = "deep-hedging"
+version = "0.1.0"
+description = "Deep hedging: learned option-hedging policies vs. Black-Scholes delta under transaction costs"
+requires-python = ">=3.13"
+dependencies = [
+    "matplotlib>=3.11.0",
+    "numpy>=2.5.1",
+    "pandas>=3.0.3",
+    "scipy>=1.18.0",
+    "torch==2.13.0",
+]
+
+[dependency-groups]
+dev = [
+    "hypothesis>=6.156.6",
+    "jupyter>=1.1.1",
+    "nbconvert>=7.17.1",
+    "pytest>=9.1.1",
+]
+
+# CPU-only torch: volunteers verify on laptops; the CUDA build adds gigabytes
+# of nvidia wheels this project never uses.
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/deep_hedging"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "gate_stage0: Stage 0 gate — environment and protocol",
+    "gate_stage1: Stage 1 gate — market simulators",
+    "gate_stage2: Stage 2 gate — pricing and classical baselines",
+    "gate_stage3: Stage 3 gate — evaluation harness and frozen test sets",
+    "gate_stage4: Stage 4 gate — learned policy",
+    "gate_stage5: Stage 5 gate — analysis and stress tests",
+    "gate_stage6: Stage 6 gate — write-up and verification pack",
+    "statistical: distributional acceptance tests with derived tolerances",
+]

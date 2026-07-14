@@ -1,0 +1,38 @@
+{
+  "TEST": {
+    "gbm": {
+      "mu": 0.0,
+      "s0": 100.0,
+      "sigma": 0.2
+    },
+    "horizon": 0.25,
+    "n_paths": 100000,
+    "n_steps": 63,
+    "seed": 303,
+    "sha256": "2d031716b16fa24eae2c3c43dbe1a659c678ee954d5aad4625f91f6e2abc7c07"
+  },
+  "TRAIN": {
+    "gbm": {
+      "mu": 0.0,
+      "s0": 100.0,
+      "sigma": 0.2
+    },
+    "horizon": 0.25,
+    "n_paths": 100000,
+    "n_steps": 63,
+    "seed": 101,
+    "sha256": "db20bf20d0b2cd9f284ed8563c53f300c956b781cdfbbfe2b1d0fc63d5275b1b"
+  },
+  "VAL": {
+    "gbm": {
+      "mu": 0.0,
+      "s0": 100.0,
+      "sigma": 0.2
+    },
+    "horizon": 0.25,
+    "n_paths": 50000,
+    "n_steps": 63,
+    "seed": 202,
+    "sha256": "ea30448b397a2956abe15678f86cd4e9a5472af54f21876f7c5936a2be829391"
+  }
+}
