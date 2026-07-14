@@ -132,7 +132,7 @@ def train_policy(
     """
     torch.manual_seed(seed)
     n_train, n_val = (2_000, 1_000) if smoke else (100_000, 20_000)
-    max_epochs, patience = (3, 2) if smoke else (50, 8)
+    max_epochs, patience = (3, 2) if smoke else (120, 12)
     batch_size = 512 if smoke else 8_192
     lr = 3e-3
 

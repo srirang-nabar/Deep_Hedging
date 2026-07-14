@@ -107,19 +107,19 @@ Each notebook: a 3-sentence "what you are looking at" intro per section, and a f
 
 ## Stage 4 — Learned policy
 
-- [ ] Feedforward policy: state = (log-moneyness, time-to-expiry, current holding, running vol estimate) → position; small MLP first
-- [ ] Training by direct differentiation through simulated P&L on TRAIN paths (the simulator is differentiable — no policy-gradient machinery); document *why* in the report
-- [ ] Objective: mean–CVaR(95%) tradeoff, λ-parameterized; train per cost level
-- [ ] **Multi-seed protocol (critic fix):** ≥5 training seeds per cost level. Published number = mean ± std across seeds evaluated on TEST; no per-seed cherry-picking. Across-seed bands become `results/tolerances.json` (the Tier 3 contract).
-- [ ] Training hygiene: early stopping on VAL CVaR only; loss curves saved; TEST never touched during development (enforced in code: evaluation module refuses TEST path-set ID unless `final=True` flag set by the sign-off script)
-- [ ] Artifacts: per-seed `state_dict` + JSON sidecar under `results/weights/`; hashes in manifest
-- [ ] Coding tests:
-  - [ ] Weight round-trip: save → load on CPU → identical outputs on a probe batch (tolerance 0)
-  - [ ] **Published-metrics reproduction test:** loading committed weights and evaluating on TEST reproduces the numbers in `CLAIMS.md` to 1e-6 (this single test is the core volunteer guarantee)
-  - [ ] Gradient sanity: loss decreases on a tiny overfit problem; gradients flow to all parameters
-  - [ ] Leak test: assert TRAIN/VAL/TEST path-set hashes are pairwise distinct and the training loop only ever received TRAIN/VAL IDs
-- [ ] Statistical test (the H1 gate): at 20 bps, across-seed mean CVaR(95%) vs. calibrated WW — paired comparison on common paths, bootstrap CI
-- [ ] `notebooks/04_learned_policy.ipynb` written and executed (loads committed weights, asserts headline numbers)
+- [x] Feedforward policy: state = (log-moneyness, time-to-expiry, current holding, running vol estimate) → position; small MLP first
+- [x] Training by direct differentiation through simulated P&L on TRAIN paths (the simulator is differentiable — no policy-gradient machinery); document *why* in the report
+- [x] Objective: mean–CVaR(95%) tradeoff, λ-parameterized; train per cost level
+- [x] **Multi-seed protocol (critic fix):** ≥5 training seeds per cost level. Published number = mean ± std across seeds evaluated on TEST; no per-seed cherry-picking. Across-seed bands become `results/tolerances.json` (the Tier 3 contract).
+- [x] Training hygiene: early stopping on VAL CVaR only; loss curves saved; TEST never touched during development (enforced in code: evaluation module refuses TEST path-set ID unless `final=True` flag set by the sign-off script)
+- [x] Artifacts: per-seed `state_dict` + JSON sidecar under `results/weights/`; hashes in manifest
+- [x] Coding tests:
+  - [x] Weight round-trip: save → load on CPU → identical outputs on a probe batch (tolerance 0)
+  - [x] **Published-metrics reproduction test:** loading committed weights and evaluating on TEST reproduces the numbers in `CLAIMS.md` to 1e-6 (this single test is the core volunteer guarantee)
+  - [x] Gradient sanity: loss decreases on a tiny overfit problem; gradients flow to all parameters
+  - [x] Leak test: assert TRAIN/VAL/TEST path-set hashes are pairwise distinct and the training loop only ever received TRAIN/VAL IDs
+- [x] Statistical test (the H1 gate): at 20 bps, across-seed mean CVaR(95%) vs. calibrated WW — paired comparison on common paths, bootstrap CI
+- [x] `notebooks/04_learned_policy.ipynb` written and executed (loads committed weights, asserts headline numbers)
 
 **Gate (`gate_stage4`):** H1 has a verdict — supported *or* an honest documented negative. Either proceeds; silent regressions don't. All weight artifacts load on CPU in the notebook.
 
@@ -169,3 +169,4 @@ Adversarial pass performed 2026-07 from the perspective of a quant interviewer /
 | 2026-07-14 | 1 | 14 gate_stage1 tests green; 01_simulators.ipynb executes end-to-end | GBM exact scheme + Heston full truncation Euler; all statistical tolerances 4 SE, derived in docstrings; critic fix: added Heston discounted-price martingale test (exact property of log-Euler step) |
 | 2026-07-14 | 2 | 13 gate_stage2 tests green; convergence slope ≈ −0.5; at 50 bps calibrated WW CVaR95 3.74 vs naive delta 5.28 | Critic fixes: Leland calibration grid saturated at its edge twice → log-spaced grid to 316 + permanent interior-argmin guard test; numpy 2.x scalar-conversion fix in pricing; float-epsilon guard in CVaR tail count. Note: Leland beats WW at 5 bps (1.23 vs 1.37) — band advantage only kicks in at higher costs |
 | 2026-07-14 | 3 | Frozen TEST table: at 50 bps CVaR95 delta 3.5041 / Leland 2.7287 / WW 2.7940; WW turnover 1.85 vs delta 3.51 | 9 claims registered + verify_claims tooling; TEST guard (PermissionError without final=True); path-set SHA-256s recorded; critic fix: manifest allow_change=False freeze guard so sign-off notebooks cannot silently re-freeze changed benchmarks. Honest note: Leland edges WW on pure CVaR95 at all positive costs |
+| 2026-07-14 | 4 | H1 verdict: **not supported** (honest negative on the conjunction). CVaR half held: policy 1.6477±0.0076 vs WW 1.8006 at 20 bps, paired diff −0.1534, CI [−0.1644, −0.1407]; turnover half failed: 2.745 vs 2.271 | 15 policies (3 costs × 5 seeds), float32 training + float64 publication; torch/numpy engine equivalence 5e-14; published-metrics reproduction to 1e-6 green; tolerances.json written. Critic notes: (a) pre-registered turnover condition is not implied by the shared objective — policy rationally buys tail relief with extra trading; (b) at 50 bps the policy converges but loses to calibrated WW on the shared objective (3.786 vs 3.740) — optimizer/architecture headroom, recorded not hidden; (c) Leland still wins pure CVaR95 at 5/20 bps |
