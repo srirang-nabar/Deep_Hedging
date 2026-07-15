@@ -15,14 +15,16 @@ protocol in plan.md Stage 2), at equal or lower turnover.
   training seeds, bootstrap CI on the CVaR difference. Supported only if the
   CI excludes zero *and* mean turnover is not higher.
 - Verdict (Stage 4 gate, 2026-07-14): **not supported** — an honest negative
-  on the conjunction. The CVaR half held: across-seed mean CVaR(95%) 1.6477 ±
-  0.0076 vs calibrated WW 1.8006, paired-bootstrap difference −0.1534 with
-  95% CI [−0.1644, −0.1407], entirely below zero. The turnover half failed:
-  policy turnover 2.745 ± 0.015 vs WW 2.271 — the learned policy buys its
-  tail-risk reduction with *more* trading, not less. (It does win the shared
-  mean–CVaR objective at 20 bps: 2.205 vs WW 2.265; and on pure CVaR(95%),
-  calibrated Leland still beats it at 5 and 20 bps, though not at 50 bps.
-  See results/learned_policy_results.json.)
+  on the conjunction. The CVaR half held decisively: across-seed mean
+  CVaR(95%) 1.5781 ± 0.0161 vs calibrated WW 1.8006, paired-bootstrap
+  difference −0.2230 with 95% CI [−0.2334, −0.2120], entirely below zero.
+  The turnover half failed: policy turnover 2.737 vs WW 2.271 — the learned
+  policy buys its tail-risk reduction with *more* trading, not less. It
+  beats every calibrated baseline on the shared mean–CVaR objective at every
+  cost level (e.g. 2.134 vs WW 2.265 at 20 bps). Verdict computed on the
+  120-epoch retrained weights (training audit, same date); the pre-registered
+  turnover condition was arguably never implied by the shared objective, but
+  it stands as written. See results/learned_policy_results.json.
 
 ## H2 — No-trade-band structure, width increasing in cost
 
