@@ -64,6 +64,10 @@ def test_report_quotes_only_registered_values():
         assert f"{abs(CLAIMS[claim_id]['value']):.4f}" in report, claim_id
 
 
+@pytest.mark.skipif(
+    not (PROJECT_ROOT / "report" / "resume_bullets.md").exists(),
+    reason="personal prep file, intentionally not committed (.gitignore)",
+)
 def test_resume_bullets_cite_existing_claims():
     bullets = (PROJECT_ROOT / "report" / "resume_bullets.md").read_text()
     cited = set(re.findall(r"[A-Z0-9]+-[A-Z0-9-]+", bullets))
@@ -77,6 +81,10 @@ def test_resume_bullets_cite_existing_claims():
             assert claim_id in CLAIMS, f"bullet cites unknown claim {claim_id}"
 
 
+@pytest.mark.skipif(
+    not (PROJECT_ROOT / "report" / "interview_qa.md").exists(),
+    reason="personal prep file, intentionally not committed (.gitignore)",
+)
 def test_interview_qa_exists_with_core_questions():
     qa = (PROJECT_ROOT / "report" / "interview_qa.md").read_text().lower()
     for topic in ("cvar", "leland", "differentiate through the sim", "straw", "misspecification", "volunteer"):

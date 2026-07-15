@@ -6,3 +6,7 @@ __pycache__/
 .hypothesis/
 .ipynb_checkpoints/
 .DS_Store
+
+# personal interview/CV prep — not for publication
+report/interview_qa.md
+report/resume_bullets.md

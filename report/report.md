@@ -25,7 +25,8 @@ structure theory says is optimal?
 - **Policy**: MLP (4→32→32→1, ~1.3k params) mapping (log-moneyness, time
   fraction, current holding, EWMA realized-vol ratio) → position ∈ [0,1].
   Trained by backprop through the simulated P&L — the simulator is
-  differentiable, so no policy-gradient machinery (see interview_qa.md).
+  differentiable, so the exact gradient is available and no policy-gradient
+  machinery is needed.
   5 seeds per cost level; published numbers are across-seed means. Early
   stopping on VAL only; TEST is hash-fingerprinted and guarded in code.
 - **Verification-first design**: every published number lives in CLAIMS.md
