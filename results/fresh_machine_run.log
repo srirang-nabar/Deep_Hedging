@@ -1,0 +1,15 @@
+=== fresh-machine dry run 2026-07-15T12:21:10+05:30 ===
+$ uv sync --frozen
+ + websocket-client==1.9.0
+ + widgetsnbextension==4.0.15
+$ uv run python -m deep_hedging.reproduce --tier 1
+[tier1] manifest OK (42 artifacts)
+[tier1] 01_simulators.ipynb executed clean (18s)
+[tier1] 02_baselines.ipynb executed clean (183s)
+[tier1] 03_baseline_results.ipynb executed clean (52s)
+[tier1] 04_learned_policy.ipynb executed clean (78s)
+[tier1] 05_analysis.ipynb executed clean (8s)
+[tier1] PASS in 339s — all notebook assertions green
+$ uv run pytest -m 'not gate_stage6' (stage6 gate validates this very log in the main repo)
+65 passed, 6 deselected in 63.13s (0:01:03)
+=== dry run complete 2026-07-15T12:27:56+05:30 ===

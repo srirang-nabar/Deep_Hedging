@@ -125,23 +125,23 @@ Each notebook: a 3-sentence "what you are looking at" intro per section, and a f
 
 ## Stage 5 — Analysis & stress tests
 
-- [ ] **Band-recovery, quantified (critic fix):** define the metric up front — for a grid of (S, t, inventory), compute the empirical no-trade region of the learned policy (states where |Δposition| < ε); report (a) overlap (IoU) with the calibrated WW band, (b) fitted band width per cost level with a monotonicity test (Page's trend test or isotonic-fit R²) across {5, 20, 50} bps. "Recovers the band" appears in claims only if both pass pre-set thresholds written in HYPOTHESES.md.
-- [ ] Ablation: stateless policy (no inventory input) vs. full policy, same multi-seed protocol
-- [ ] Misspecification: train GBM → evaluate on (a) Heston TEST paths, (b) block-bootstrapped NIFTY returns. NIFTY data snapshotted to `data/nifty_daily.csv` with source, date-range, and SHA256; block-length sensitivity (2–3 values) reported
-- [ ] Optional (only if ahead of schedule): PPO comparison to demonstrate why direct differentiation was the right call
-- [ ] Statistical tests: monotonicity gate; degradation quantified with across-seed CIs; H2/H3 verdicts recorded in HYPOTHESES.md
-- [ ] `notebooks/05_analysis.ipynb` written and executed; all Stage 5 claims entered into `CLAIMS.md`
+- [x] **Band-recovery, quantified (critic fix):** define the metric up front — for a grid of (S, t, inventory), compute the empirical no-trade region of the learned policy (states where |Δposition| < ε); report (a) overlap (IoU) with the calibrated WW band, (b) fitted band width per cost level with a monotonicity test (Page's trend test or isotonic-fit R²) across {5, 20, 50} bps. "Recovers the band" appears in claims only if both pass pre-set thresholds written in HYPOTHESES.md.
+- [x] Ablation: stateless policy (no inventory input) vs. full policy, same multi-seed protocol
+- [x] Misspecification: train GBM → evaluate on (a) Heston TEST paths, (b) block-bootstrapped NIFTY returns. NIFTY data snapshotted to `data/nifty_daily.csv` with source, date-range, and SHA256; block-length sensitivity (2–3 values) reported
+- [ ] Optional (skipped — not ahead of schedule): PPO comparison to demonstrate why direct differentiation was the right call
+- [x] Statistical tests: monotonicity gate; degradation quantified with across-seed CIs; H2/H3 verdicts recorded in HYPOTHESES.md
+- [x] `notebooks/05_analysis.ipynb` written and executed; all Stage 5 claims entered into `CLAIMS.md`
 
 **Gate (`gate_stage5`):** H1–H3 all have numeric verdicts; band metric computed, not eyeballed.
 
 ## Stage 6 — Write-up & verification pack
 
-- [ ] `README.md` headline table filled from `CLAIMS.md` (numbers must match assert values exactly)
-- [ ] `report/report.md`: question → method → results → honest limitations (including: what exact vs. statistical reproducibility means here; where the learned policy did *not* win)
-- [ ] `report/interview_qa.md`: anticipated grills (why CVaR not variance; Leland's argument; why differentiate through the sim rather than model-free RL; how baselines were calibrated fairly; what breaks under misspecification and why; how a volunteer verifies the claims)
-- [ ] `REPRODUCING.md` finalized with measured wall-clock times per tier on a reference CPU
-- [ ] **Fresh-machine dry run (final gate):** copy the folder to a clean directory (or container), `uv sync --frozen`, run Tier 1 end-to-end. Must pass with zero manual fixes. Record the transcript in `results/fresh_machine_run.log`.
-- [ ] Resume bullets drafted with real numbers, framed per the framing rule; each bullet has a `CLAIMS.md` row
+- [x] `README.md` headline table filled from `CLAIMS.md` (numbers must match assert values exactly)
+- [x] `report/report.md`: question → method → results → honest limitations (including: what exact vs. statistical reproducibility means here; where the learned policy did *not* win)
+- [x] `report/interview_qa.md`: anticipated grills (why CVaR not variance; Leland's argument; why differentiate through the sim rather than model-free RL; how baselines were calibrated fairly; what breaks under misspecification and why; how a volunteer verifies the claims)
+- [x] `REPRODUCING.md` finalized with measured wall-clock times per tier on a reference CPU
+- [x] **Fresh-machine dry run (final gate):** copy the folder to a clean directory (or container), `uv sync --frozen`, run Tier 1 end-to-end. Must pass with zero manual fixes. Record the transcript in `results/fresh_machine_run.log`.
+- [x] Resume bullets drafted with real numbers, framed per the framing rule; each bullet has a `CLAIMS.md` row
 
 **Gate (`gate_stage6`):** fresh-machine Tier 1 passes; every README number has a green assert.
 
@@ -171,3 +171,5 @@ Adversarial pass performed 2026-07 from the perspective of a quant interviewer /
 | 2026-07-14 | 3 | Frozen TEST table: at 50 bps CVaR95 delta 3.5041 / Leland 2.7287 / WW 2.7940; WW turnover 1.85 vs delta 3.51 | 9 claims registered + verify_claims tooling; TEST guard (PermissionError without final=True); path-set SHA-256s recorded; critic fix: manifest allow_change=False freeze guard so sign-off notebooks cannot silently re-freeze changed benchmarks. Honest note: Leland edges WW on pure CVaR95 at all positive costs |
 | 2026-07-14 | 4 | H1 verdict: **not supported** (honest negative on the conjunction, 120-epoch retrained weights). CVaR half held decisively: policy 1.5781±0.0161 vs WW 1.8006 at 20 bps, paired diff −0.2230, CI [−0.2334, −0.2120]; turnover half failed: 2.737 vs 2.271 | 15 policies (3 costs × 5 seeds); training audit (user prompt) found original 50-epoch runs capped mid-descent → retrained at 120 epochs via deliberate manifest unfreeze; retrained policy beats every calibrated baseline on CVaR95 AND the shared objective at every cost level (J at 20 bps: 2.134 vs WW 2.265; at 50 bps: 3.675 vs 3.740). Critic notes: (a) pre-registered turnover condition not implied by the shared objective — stands as written; (b) best epochs still near the 120 cap: small residual headroom likely, documented in CLAIMS.md |
 | 2026-07-15 | 4 | Convergence probe: +40 epochs gains +0.0049/+0.0083/+0.0155 J at 5/20/50 bps — all inside across-seed spreads (0.020/0.031/0.059) | Training declared converged at the seed-noise floor; no further retraining. Committed weights unchanged |
+| 2026-07-15 | 5 | H2 **not supported** (monotonicity 5/5 seeds, widths 0.0208→0.0234→0.0333; IoU 0.035/0.058/0.137 ≪ 0.5). H3 **not supported — favorable violation** (no inversion anywhere; Heston diff −0.1634 shrank as predicted, NIFTY block-10 −0.3754 WIDENED vs GBM −0.2230). Ablation: inventory input buys turnover (2.74 vs 3.11), not tail risk (CVaR95 1.5781 vs 1.5831, within seed noise) | NIFTY 50 snapshot 2016–2026 (2,462 closes, SHA-256 + provenance committed); all misspecified path sets regenerate bit-identically from seeds; thresholds pre-registered before analysis ran; ablation background job died silently after seed 0 → relaunched unbuffered |
+| 2026-07-15 | 6 | Fresh-machine dry run PASS with zero manual fixes: `uv sync --frozen` + Tier 1 in 339s (42 artifacts hash-verified, 5 notebooks assert green) + 65 tests; full suite now 71 green incl. gate_stage6 | README/report/interview QA/resume bullets done, every public number backed by a CLAIMS.md row; reproduce.py tiers 1–3 implemented (tier 2 measured 196s); Stage 6 gate caught 3 write-up defects (line-wrapped CI, 3-dp rounding of registered values, wildcard claim citations) — documents fixed, not the tests |

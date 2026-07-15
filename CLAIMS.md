@@ -23,6 +23,21 @@ fairness protocol (`results/baseline_calibration.json`).
 | LP50-CVAR95-MEAN | CVaR(95%) of learned policy at 50 bps, mean over 5 seeds | 2.5408 | 04_learned_policy | test_published_metrics_reproduce | 4 |
 | LP20-TURNOVER-MEAN | Mean turnover of learned policy at 20 bps, mean over 5 seeds | 2.7367 | 04_learned_policy | test_published_metrics_reproduce | 4 |
 | H1-CVAR-DIFF-MEAN | Paired CVaR(95%) difference, policy − calibrated WW, 20 bps | -0.2230 | 04_learned_policy | test_h1_verdict_recorded_and_consistent | 4 |
+| H2-WIDTH-5 | Learned hold-region width at 5 bps (5-seed mean, pre-registered grid) | 0.0208 | 05_analysis | test_stage5_claims_match_artifacts | 5 |
+| H2-WIDTH-20 | Learned hold-region width at 20 bps (5-seed mean, pre-registered grid) | 0.0234 | 05_analysis | test_stage5_claims_match_artifacts | 5 |
+| H2-WIDTH-50 | Learned hold-region width at 50 bps (5-seed mean, pre-registered grid) | 0.0333 | 05_analysis | test_stage5_claims_match_artifacts | 5 |
+| H2-IOU-5 | IoU of learned hold region vs calibrated WW band at 5 bps | 0.0350 | 05_analysis | test_stage5_claims_match_artifacts | 5 |
+| H2-IOU-20 | IoU of learned hold region vs calibrated WW band at 20 bps | 0.0581 | 05_analysis | test_stage5_claims_match_artifacts | 5 |
+| H2-IOU-50 | IoU of learned hold region vs calibrated WW band at 50 bps | 0.1367 | 05_analysis | test_stage5_claims_match_artifacts | 5 |
+| H3-HESTON-CVAR-DIFF | Paired CVaR(95%) diff policy − WW on Heston paths, 20 bps | -0.1634 | 05_analysis | test_stage5_claims_match_artifacts | 5 |
+| H3-NIFTY-CVAR-DIFF | Paired CVaR(95%) diff policy − WW on NIFTY block-10 bootstrap, 20 bps | -0.3754 | 05_analysis | test_stage5_claims_match_artifacts | 5 |
+| ABL20-CVAR95-MEAN | CVaR(95%) of stateless (no-inventory) policy at 20 bps, 5-seed mean | 1.5831 | 05_analysis | test_stage5_claims_match_artifacts | 5 |
+
+Honest note (Stage 5): the ablation shows the inventory input buys cost
+efficiency, not tail risk: stateless CVaR(95%) 1.5831 ± 0.0182 is within
+seed noise of the full policy's 1.5781 ± 0.0161, but stateless turnover is
+~14% higher (3.1104 vs 2.7367). "The inventory feature reduces risk" would
+be an overclaim and is not made.
 
 Honest note (Stage 4): H1 as pre-registered is **not supported** — the
 policy reduces CVaR(95%) vs calibrated WW at every cost level (CI excludes

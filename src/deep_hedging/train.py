@@ -55,8 +55,8 @@ TRAIN_SEEDS = (0, 1, 2, 3, 4)
 LAMBDA = 1.0  # mean-CVaR tradeoff — identical to baseline calibration
 
 
-def weight_path(cost_bps: float, seed: int, out_dir: Path = WEIGHTS_DIR) -> Path:
-    return out_dir / f"policy_c{cost_bps:g}_s{seed}.pt"
+def weight_path(cost_bps: float, seed: int, out_dir: Path = WEIGHTS_DIR, prefix: str = "policy") -> Path:
+    return out_dir / f"{prefix}_c{cost_bps:g}_s{seed}.pt"
 
 
 def cvar_torch(losses: torch.Tensor, alpha: float = 0.95) -> torch.Tensor:
@@ -80,9 +80,11 @@ def simulate_pnl_torch(
     horizon: float = CANONICAL["horizon"],
     sigma: float = CANONICAL_GBM.sigma,
     cost_rate: float,
+    mask_inventory: bool = False,
 ) -> torch.Tensor:
     """Differentiable mirror of evaluate.simulate_hedge at r=0, including the
-    terminal liquidation cost and the EWMA vol feature of PolicyStrategy."""
+    terminal liquidation cost and the EWMA vol feature of PolicyStrategy.
+    mask_inventory=True zeroes the holding feature (stateless ablation)."""
     n_steps = paths.shape[1] - 1
     dt = horizon / n_steps
     premium = float(bs_price(float(paths[0, 0]), strike, horizon, sigma))
@@ -101,7 +103,7 @@ def simulate_pnl_torch(
         features = build_features(
             torch.log(spot / strike),
             torch.full_like(spot, tau / horizon),
-            holding,
+            holding * 0.0 if mask_inventory else holding,
             torch.sqrt(ewma_var) / sigma - 1.0,
         )
         target = policy(features)
@@ -122,6 +124,8 @@ def train_policy(
     smoke: bool = False,
     out_dir: Path = WEIGHTS_DIR,
     verbose: bool = True,
+    mask_inventory: bool = False,
+    prefix: str = "policy",
 ) -> dict:
     """Train one policy; save weights + sidecar; return the sidecar dict.
 
@@ -161,7 +165,7 @@ def train_policy(
         epoch_losses = []
         for lo in range(0, n_train, batch_size):
             batch = t_train[order[lo : lo + batch_size]]
-            loss = objective_torch(simulate_pnl_torch(policy, batch, cost_rate=cost_rate))
+            loss = objective_torch(simulate_pnl_torch(policy, batch, cost_rate=cost_rate, mask_inventory=mask_inventory))
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -170,7 +174,7 @@ def train_policy(
         scheduler.step()
 
         with torch.no_grad():
-            val_j = float(objective_torch(simulate_pnl_torch(policy, t_val, cost_rate=cost_rate)))
+            val_j = float(objective_torch(simulate_pnl_torch(policy, t_val, cost_rate=cost_rate, mask_inventory=mask_inventory)))
         val_curve.append(val_j)
         if verbose:
             print(f"  c{cost_bps:g} s{seed} epoch {epoch:02d}: train J {train_curve[-1]:.4f}  val J {val_j:.4f}")
@@ -186,6 +190,7 @@ def train_policy(
         "cost_bps": cost_bps,
         "seed": seed,
         "smoke": smoke,
+        "mask_inventory": mask_inventory,
         "objective": {"kind": "mean_cvar", "alpha": 0.95, "lam": LAMBDA},
         "optimizer": {"name": "adam", "lr": lr, "schedule": "cosine", "batch_size": batch_size, "train_dtype": "float32"},
         "max_epochs": max_epochs,
@@ -202,7 +207,7 @@ def train_policy(
         },
         "market": {"gbm": vars(CANONICAL_GBM)} | CANONICAL,
     }
-    save_policy(policy, weight_path(cost_bps, seed, out_dir), sidecar)
+    save_policy(policy, weight_path(cost_bps, seed, out_dir, prefix), sidecar)
     return sidecar
 
 

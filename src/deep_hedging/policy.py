@@ -91,9 +91,10 @@ class PolicyStrategy:
     concurrently running engines.
     """
 
-    def __init__(self, policy: HedgePolicy, *, sigma: float):
+    def __init__(self, policy: HedgePolicy, *, sigma: float, use_inventory: bool = True):
         self.policy = policy
         self.sigma = sigma
+        self.use_inventory = use_inventory  # False: ablation — hide holdings
         self._prev_spot: np.ndarray | None = None
         self._ewma_var: np.ndarray | None = None
 
@@ -112,7 +113,7 @@ class PolicyStrategy:
         features = build_features(
             np.log(state.spot / state.strike),
             np.full_like(state.spot, state.time_to_expiry / horizon),
-            state.holding,
+            state.holding if self.use_inventory else np.zeros_like(state.holding),
             np.sqrt(self._ewma_var) / self.sigma - 1.0,
         )
         with torch.no_grad():

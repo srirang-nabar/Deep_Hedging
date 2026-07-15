@@ -1,0 +1,12 @@
+{
+  "instrument": "NIFTY 50 index (^NSEI)",
+  "source": "Yahoo Finance v8 chart API (https://query1.finance.yahoo.com/v8/finance/chart/%5ENSEI?range=10y&interval=1d)",
+  "fetched": "2026-07-15",
+  "date_range": [
+    "2016-07-15",
+    "2026-07-15"
+  ],
+  "n_observations": 2462,
+  "field": "daily close",
+  "sha256": "01a2a6fd25f1781461b8868047e9329cb29433471986ab1456333bdf464bf304"
+}
