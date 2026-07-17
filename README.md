@@ -1,4 +1,6 @@
-# Deep Hedging
+# Option Hedging Optimization (Stochastic Control, Deep Learning)
+
+*a.k.a. Deep Hedging*
 
 Learned option-hedging policies vs. classical delta hedging under
 proportional transaction costs — a stochastic control study. With zero

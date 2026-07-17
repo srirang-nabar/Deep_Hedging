@@ -1,4 +1,4 @@
-# Deep Hedging — Staged Implementation Plan
+# Option Hedging Optimization (Stochastic Control, Deep Learning) — Staged Implementation Plan
 
 Learned option-hedging policies vs. Black-Scholes delta under transaction costs. Full research rationale: [../placement_projects/01_deep_hedging.md](../placement_projects/01_deep_hedging.md).
 
