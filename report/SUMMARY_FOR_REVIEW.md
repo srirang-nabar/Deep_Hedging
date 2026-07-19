@@ -18,6 +18,8 @@ thresholds; every public number has a CLAIMS.md row tied to a test and notebook 
 
 **How to review quickly (~5 min):**
 
+**Fastest path: `notebooks/00_review_walkthrough.ipynb`** — a single commented, pre-executed notebook backing every resume point, with the asserts inline.
+
 1. Open `notebooks/05_analysis.ipynb` (band-recovery chart, misspecification results) and
    `notebooks/03_baseline_results.ipynb` (the headline table) — both commented, pre-executed,
    and end with asserts against CLAIMS.md.
